@@ -5,6 +5,8 @@ import com.example.demo.model.Tour;
 import com.example.demo.repository.TourRepository;
 import com.example.demo.service.TourService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,7 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
+    @CacheEvict(value = "page")
     public TourDto createTour(TourDto tourCreateDto) {
         Tour tour = fromDtoToTour(tourCreateDto);
         tourRepository.save(tour);
@@ -35,8 +38,11 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
-    public Page<Tour> getTours(Pageable pageable) {
-        return tourRepository.findAll(pageable);
+    @Cacheable("page")
+    public List<Tour> getTours(Pageable pageable) {
+        List<Tour> tours = tourRepository.findAll(pageable).toList();
+        return tours;
+
     }
 
     @Override
@@ -51,6 +57,7 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
+    @CacheEvict(value = "page", allEntries = true)
     public void deleteTour(String id) {
         tourRepository.deleteById(id);
     }
@@ -61,6 +68,7 @@ public class TourServiceImpl implements TourService {
     }
 
     @Override
+    @CacheEvict(value = "page")
     public void updateTour(TourDto tourDto) {
         Tour tour = getTour(tourDto.getId());
 

@@ -15,7 +15,7 @@ public interface TourService {
     Tour getTour(String id);
     void deleteTour(String id);
     void deleteAllTours();
-    Page<Tour> getTours(Pageable pageable);
+    List<Tour> getTours(Pageable pageable);
     List<Tour> getAllTours();
     List<Tour> getToursByPrice(int price);
     List<Tour> getToursByDestination (String destination);

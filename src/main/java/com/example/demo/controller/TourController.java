@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,9 +29,11 @@ public class TourController {
     @GetMapping("/tours")
     public Page<Tour> getToursPage(
             @RequestParam(defaultValue = "0") @Min(0) Integer offset,              
-            @RequestParam(defaultValue = "40") @Min(1) @Max(100) Integer limit
+            @RequestParam(defaultValue = "10") @Min(1) @Max(100) Integer limit
     ) {
-        return service.getTours(PageRequest.of(offset, limit));
+//        List<Tour> tours = service.getTours(PageRequest.of(offset, limit));
+        Page<Tour> tours = convertListToPage(service.getTours(PageRequest.of(offset, limit)), offset, limit);
+        return tours;
     }
 
     @GetMapping("/tours/{id}")
@@ -61,5 +64,11 @@ public class TourController {
     @PutMapping("/tours")
     public void putTours(@RequestBody TourDto newTour) {
         service.updateTour(newTour);
+    }
+
+    private static <T> Page<T> convertListToPage(List<T> list, int page, int size) {
+        int start = Math.min(page * size, list.size());    int end = Math.min(start + size, list.size());
+        List<T> sublist = list.subList(start, end);
+        return new PageImpl<>(sublist, PageRequest.of(page, size), list.size());
     }
 }
