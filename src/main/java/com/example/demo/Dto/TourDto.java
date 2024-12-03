@@ -24,6 +24,7 @@ public class TourDto {
         this.price = price;
         this.duration = duration;
         this.features = features;
+        
         this.startDate = startDate;
         this.finishDate = finishDate;
         this.rating = rating;
